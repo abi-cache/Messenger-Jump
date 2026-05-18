@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MessengerJump</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      width: 260px;
+      font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #fff;
+      color: #050505;
+    }
+    .header {
+      background: #1877F2;
+      padding: 14px 16px;
+      color: #fff;
+    }
+    .header h1 {
+      font-size: 15px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .header p {
+      font-size: 12px;
+      opacity: 0.85;
+      margin-top: 3px;
+    }
+    .body { padding: 14px 16px; }
+    .step {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 12px;
+      align-items: flex-start;
+    }
+    .step-num {
+      width: 22px;
+      height: 22px;
+      background: #EBF5FF;
+      color: #1877F2;
+      border-radius: 50%;
+      font-size: 11px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+    .step-text { font-size: 13px; line-height: 1.45; color: #444; }
+    .step-text strong { color: #050505; }
+    .shortcut {
+      background: #F0F2F5;
+      border-radius: 8px;
+      padding: 10px 12px;
+      font-size: 12px;
+      color: #65676B;
+      margin-top: 4px;
+    }
+    .shortcut kbd {
+      background: #fff;
+      border: 1px solid #D8D9DB;
+      border-radius: 4px;
+      padding: 1px 5px;
+      font-size: 11px;
+      font-family: monospace;
+      color: #050505;
+    }
+    .open-btn {
+      display: block;
+      width: 100%;
+      padding: 9px;
+      background: #1877F2;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 12px;
+      transition: background 0.15s;
+    }
+    .open-btn:hover { background: #1565d8; }
+    .footer {
+      font-size: 11px;
+      color: #8A8D91;
+      text-align: center;
+      padding: 8px 16px 12px;
+      border-top: 1px solid #F0F2F5;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><circle cx="12" cy="16" r="2"/></svg>
+      MessengerJump
+    </h1>
+    <p>Jump to any date in Messenger</p>
+  </div>
+
+  <div class="body">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-text">Go to <strong>facebook.com</strong> and open a Messenger conversation.</div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-text">Click the <strong>blue calendar button</strong> in the bottom-right corner of the page.</div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-text">Pick a date or date range, then hit <strong>Search messages</strong>.</div>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-text">If no results appear, <strong>scroll up</strong> in the conversation to load older messages, then search again.</div>
+    </div>
+
+    <div class="shortcut">
+      Keyboard shortcut: <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>D</kbd>
+    </div>
+
+    <button class="open-btn" id="open-fb">Open Facebook Messenger →</button>
+  </div>
+
+  <div class="footer">Works on facebook.com and web.facebook.com</div>
+
+  <script>
+    document.getElementById('open-fb').addEventListener('click', () => {
+      chrome.tabs.create({ url: 'https://www.facebook.com/messages' });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,297 @@
+/* FB Message Date Search - Injected Styles */
+
+#fbds-container {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 2147483647;
+  font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* ── Toggle button ── */
+#fbds-toggle-btn {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: #1877F2;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(24, 119, 242, 0.4);
+  transition: background 0.2s, transform 0.15s;
+}
+#fbds-toggle-btn:hover { background: #1565d8; transform: scale(1.07); }
+#fbds-toggle-btn.fbds-active { background: #0a47a9; }
+
+/* ── Panel ── */
+#fbds-panel {
+  position: absolute;
+  bottom: 60px;
+  right: 0;
+  width: 290px;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.18);
+  overflow: hidden;
+  transform: scale(0.92) translateY(8px);
+  opacity: 0;
+  pointer-events: none;
+  transform-origin: bottom right;
+  transition: transform 0.22s cubic-bezier(.34,1.56,.64,1), opacity 0.18s ease;
+}
+#fbds-panel.fbds-visible {
+  transform: scale(1) translateY(0);
+  opacity: 1;
+  pointer-events: all;
+}
+
+/* ── Header ── */
+#fbds-header {
+  background: #1877F2;
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #fff;
+}
+#fbds-logo {
+  display: flex;
+  align-items: center;
+  opacity: 0.9;
+}
+#fbds-title {
+  flex: 1;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+}
+#fbds-close {
+  background: rgba(255,255,255,0.15);
+  border: none;
+  border-radius: 6px;
+  color: #fff;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  transition: background 0.15s;
+}
+#fbds-close:hover { background: rgba(255,255,255,0.25); }
+
+/* ── Body ── */
+#fbds-body {
+  padding: 14px;
+}
+
+.fbds-section {
+  margin-bottom: 12px;
+}
+
+.fbds-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #65676B;
+  margin-bottom: 6px;
+}
+
+/* ── Mode tabs ── */
+#fbds-mode-tabs {
+  display: flex;
+  background: #F0F2F5;
+  border-radius: 8px;
+  padding: 2px;
+  gap: 2px;
+}
+.fbds-tab {
+  flex: 1;
+  padding: 6px 0;
+  border: none;
+  background: transparent;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #65676B;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.fbds-tab.active {
+  background: #fff;
+  color: #1877F2;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+}
+.fbds-tab:hover:not(.active) { background: rgba(255,255,255,0.6); }
+
+/* ── Date inputs ── */
+.fbds-input {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1.5px solid #E4E6EB;
+  border-radius: 8px;
+  font-size: 13px;
+  font-family: inherit;
+  color: #050505;
+  background: #F7F8FA;
+  box-sizing: border-box;
+  transition: border-color 0.15s;
+  outline: none;
+}
+.fbds-input:focus {
+  border-color: #1877F2;
+  background: #fff;
+}
+
+/* ── Search button ── */
+#fbds-search-btn {
+  width: 100%;
+  padding: 9px;
+  background: #1877F2;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: background 0.15s, transform 0.1s;
+  margin-bottom: 10px;
+}
+#fbds-search-btn:hover { background: #1565d8; }
+#fbds-search-btn:active { transform: scale(0.98); }
+
+/* ── Stop button ── */
+#fbds-stop-btn {
+  width: 100%;
+  padding: 9px;
+  background: #c0392b;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: background 0.15s;
+  margin-bottom: 10px;
+}
+#fbds-stop-btn:hover { background: #a93226; }
+
+/* ── Status messages ── */
+#fbds-status {
+  font-size: 12px;
+  line-height: 1.45;
+  border-radius: 6px;
+  padding: 0;
+  margin-bottom: 0;
+}
+#fbds-status:not(:empty) { padding: 7px 9px; margin-bottom: 8px; }
+.fbds-status-error   { background: #FFF0F0; color: #C0392B; }
+.fbds-status-warning { background: #FFFBE6; color: #7D6608; }
+.fbds-status-searching { background: #EBF5FF; color: #1877F2; }
+
+/* ── Results ── */
+#fbds-results-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+#fbds-results-count {
+  font-size: 12px;
+  font-weight: 600;
+  color: #1877F2;
+}
+#fbds-nav-btns {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.fbds-nav-btn {
+  background: #F0F2F5;
+  border: none;
+  border-radius: 5px;
+  color: #1877F2;
+  cursor: pointer;
+  padding: 4px 6px;
+  display: flex;
+  align-items: center;
+  transition: background 0.15s;
+}
+.fbds-nav-btn:hover { background: #E4E6EB; }
+#fbds-nav-pos { font-size: 12px; color: #65676B; min-width: 38px; text-align: center; }
+
+#fbds-result-list {
+  max-height: 130px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #C0C0C0 transparent;
+}
+
+.fbds-result-item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 6px 9px;
+  border: none;
+  background: transparent;
+  border-radius: 6px;
+  font-size: 12px;
+  color: #050505;
+  cursor: pointer;
+  transition: background 0.12s;
+}
+.fbds-result-item:hover { background: #F0F2F5; }
+.fbds-result-item.fbds-result-active { background: #EBF5FF; color: #1877F2; font-weight: 600; }
+
+.fbds-more {
+  font-size: 11px;
+  color: #65676B;
+  padding: 4px 9px;
+  font-style: italic;
+}
+
+/* ── Tip ── */
+#fbds-tip {
+  display: flex;
+  align-items: flex-start;
+  gap: 5px;
+  font-size: 11px;
+  color: #8A8D91;
+  line-height: 1.4;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid #F0F2F5;
+}
+
+/* ── Highlighted elements in page ── */
+.fbds-highlight {
+  outline: 2px solid rgba(24, 119, 242, 0.45) !important;
+  outline-offset: 2px !important;
+  border-radius: 4px !important;
+}
+
+@keyframes fbds-pulse {
+  0%   { outline-color: rgba(24,119,242,0.9); background: rgba(24,119,242,0.12); }
+  50%  { outline-color: rgba(24,119,242,0.4); background: rgba(24,119,242,0.04); }
+  100% { outline-color: rgba(24,119,242,0.9); background: rgba(24,119,242,0.12); }
+}
+.fbds-highlight-active {
+  outline: 2.5px solid #1877F2 !important;
+  outline-offset: 3px !important;
+  border-radius: 4px !important;
+  animation: fbds-pulse 0.6s ease-in-out 3 !important;
+}
