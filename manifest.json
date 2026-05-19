@@ -3,7 +3,7 @@
   "name": "MessengerJump",
   "version": "1.2.0",
   "description": "Jump to any date in Messenger instantly. Auto-scrolls to load older messages for you.",
-  "permissions": ["storage", "tabs", "scripting"],
+  "permissions": ["storage", "tabs"],
   "host_permissions": [
     "https://www.facebook.com/*",
     "https://web.facebook.com/*"
