@@ -12,7 +12,16 @@
   let searchResults = [];
   let currentResultIndex = -1;
   let isAutoScrolling = false;
+  
+let btnEnabled = true; // controls whether the floating calendar button is visible
 
+  function setButtonVisible(enabled) {
+    btnEnabled = enabled;
+    const btn = document.getElementById('fbds-toggle-btn');
+    if (!btn) return;
+    btn.style.display = enabled ? '' : 'none';
+    if (!enabled && panelVisible) setPanel(false);
+  }
   // Auto-scroll state
   let scrollMutationObserver = null;
   let scrollContainer = null;       // cached once per search
