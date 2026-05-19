@@ -593,16 +593,16 @@
   }
 
   // ── Re-inject panel if Facebook's SPA removes it ──────────────────────────
-  function watchForPanelRemoval() {
+ function watchForPanelRemoval() {
     const bodyObserver = new MutationObserver(() => {
       if (!document.getElementById('fbds-container')) {
+        if (!extensionEnabled) return;
         createPanel();
         bindEvents();
       }
     });
     bodyObserver.observe(document.body, { childList: true });
   }
-
   // ── Init ──────────────────────────────────────────────────────────────────
   function init() {
     createPanel();
