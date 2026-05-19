@@ -6,91 +6,36 @@
   <title>MessengerJump</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      width: 260px;
-      font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
-      background: #fff;
-      color: #050505;
-    }
-    .header {
-      background: #1877F2;
-      padding: 14px 16px;
-      color: #fff;
-    }
-    .header h1 {
-      font-size: 15px;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .header p {
-      font-size: 12px;
-      opacity: 0.85;
-      margin-top: 3px;
-    }
+    body { width: 260px; font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif; background: #fff; color: #050505; }
+    .header { background: #1877F2; padding: 14px 16px; color: #fff; }
+    .header h1 { font-size: 15px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+    .header p { font-size: 12px; opacity: 0.85; margin-top: 3px; }
+
+    .toggle-row { display: flex; align-items: center; justify-content: space-between; padding: 13px 16px; border-bottom: 1px solid #F0F2F5; }
+    .toggle-label-wrap { display: flex; flex-direction: column; gap: 2px; }
+    .toggle-label { font-size: 13px; font-weight: 600; color: #050505; }
+    .toggle-sub { font-size: 11px; color: #8A8D91; }
+
+    .switch { position: relative; display: inline-block; width: 42px; height: 24px; flex-shrink: 0; }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider { position: absolute; inset: 0; background: #ccc; border-radius: 24px; cursor: pointer; transition: background 0.2s; }
+    .slider::before { content: ''; position: absolute; width: 18px; height: 18px; left: 3px; top: 3px; background: #fff; border-radius: 50%; transition: transform 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
+    input:checked + .slider { background: #1877F2; }
+    input:checked + .slider::before { transform: translateX(18px); }
+
     .body { padding: 14px 16px; }
-    .step {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 12px;
-      align-items: flex-start;
-    }
-    .step-num {
-      width: 22px;
-      height: 22px;
-      background: #EBF5FF;
-      color: #1877F2;
-      border-radius: 50%;
-      font-size: 11px;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-      margin-top: 1px;
-    }
+    .step { display: flex; gap: 10px; margin-bottom: 12px; align-items: flex-start; }
+    .step-num { width: 22px; height: 22px; background: #EBF5FF; color: #1877F2; border-radius: 50%; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
     .step-text { font-size: 13px; line-height: 1.45; color: #444; }
     .step-text strong { color: #050505; }
-    .shortcut {
-      background: #F0F2F5;
-      border-radius: 8px;
-      padding: 10px 12px;
-      font-size: 12px;
-      color: #65676B;
-      margin-top: 4px;
-    }
-    .shortcut kbd {
-      background: #fff;
-      border: 1px solid #D8D9DB;
-      border-radius: 4px;
-      padding: 1px 5px;
-      font-size: 11px;
-      font-family: monospace;
-      color: #050505;
-    }
-    .open-btn {
-      display: block;
-      width: 100%;
-      padding: 9px;
-      background: #1877F2;
-      color: #fff;
-      border: none;
-      border-radius: 8px;
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-      margin-top: 12px;
-      transition: background 0.15s;
-    }
+
+    .shortcut { background: #F0F2F5; border-radius: 8px; padding: 10px 12px; font-size: 12px; color: #65676B; margin-top: 4px; }
+    .shortcut kbd { background: #fff; border: 1px solid #D8D9DB; border-radius: 4px; padding: 1px 5px; font-size: 11px; font-family: monospace; color: #050505; }
+    .open-btn { display: block; width: 100%; padding: 9px; background: #1877F2; color: #fff; border: none; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; margin-top: 12px; transition: background 0.15s; }
     .open-btn:hover { background: #1565d8; }
-    .footer {
-      font-size: 11px;
-      color: #8A8D91;
-      text-align: center;
-      padding: 8px 16px 12px;
-      border-top: 1px solid #F0F2F5;
-    }
+
+    body.disabled .body { opacity: 0.45; pointer-events: none; }
+    .footer { font-size: 11px; color: #8A8D91; text-align: center; padding: 8px 16px 12px; border-top: 1px solid #F0F2F5; }
   </style>
 </head>
 <body>
@@ -102,34 +47,53 @@
     <p>Jump to any date in Messenger</p>
   </div>
 
+  <div class="toggle-row">
+    <div class="toggle-label-wrap">
+      <span class="toggle-label">Show calendar button</span>
+      <span class="toggle-sub" id="toggle-sub">Button visible on Facebook</span>
+    </div>
+    <label class="switch" title="Toggle the calendar button on/off">
+      <input type="checkbox" id="enabled-toggle" checked />
+      <span class="slider"></span>
+    </label>
+  </div>
+
   <div class="body">
-    <div class="step">
-      <div class="step-num">1</div>
-      <div class="step-text">Go to <strong>facebook.com</strong> and open a Messenger conversation.</div>
-    </div>
-    <div class="step">
-      <div class="step-num">2</div>
-      <div class="step-text">Click the <strong>blue calendar button</strong> in the bottom-right corner of the page.</div>
-    </div>
-    <div class="step">
-      <div class="step-num">3</div>
-      <div class="step-text">Pick a date or date range, then hit <strong>Search messages</strong>.</div>
-    </div>
-    <div class="step">
-      <div class="step-num">4</div>
-      <div class="step-text">If no results appear, <strong>scroll up</strong> in the conversation to load older messages, then search again.</div>
-    </div>
-
-    <div class="shortcut">
-      Keyboard shortcut: <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>D</kbd>
-    </div>
-
+    <div class="step"><div class="step-num">1</div><div class="step-text">Go to <strong>facebook.com</strong> and open a Messenger conversation.</div></div>
+    <div class="step"><div class="step-num">2</div><div class="step-text">Click the <strong>blue calendar button</strong> in the bottom-right corner of the page.</div></div>
+    <div class="step"><div class="step-num">3</div><div class="step-text">Pick a date or date range, then hit <strong>Search messages</strong>.</div></div>
+    <div class="step"><div class="step-num">4</div><div class="step-text">The extension <strong>auto-scrolls</strong> to load older messages until your date is found.</div></div>
+    <div class="shortcut">Keyboard shortcut: <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>D</kbd></div>
     <button class="open-btn" id="open-fb">Open Facebook Messenger →</button>
   </div>
 
   <div class="footer">Works on facebook.com and web.facebook.com</div>
 
   <script>
+    const toggle = document.getElementById('enabled-toggle');
+    const sub    = document.getElementById('toggle-sub');
+
+    function applyState(enabled) {
+      toggle.checked = enabled;
+      sub.textContent = enabled ? 'Button visible on Facebook' : 'Button hidden — Ctrl+Shift+D still works';
+      document.body.classList.toggle('disabled', !enabled);
+    }
+
+    chrome.storage.local.get({ messengerJumpEnabled: true }, ({ messengerJumpEnabled }) => {
+      applyState(messengerJumpEnabled);
+    });
+
+    toggle.addEventListener('change', () => {
+      const enabled = toggle.checked;
+      chrome.storage.local.set({ messengerJumpEnabled: enabled });
+      applyState(enabled);
+      chrome.tabs.query({ url: ['https://www.facebook.com/*', 'https://web.facebook.com/*'] }, tabs => {
+        tabs.forEach(tab => {
+          chrome.tabs.sendMessage(tab.id, { type: 'MESSENGERJUMP_SET_ENABLED', enabled }).catch(() => {});
+        });
+      });
+    });
+
     document.getElementById('open-fb').addEventListener('click', () => {
       chrome.tabs.create({ url: 'https://www.facebook.com/messages' });
     });
