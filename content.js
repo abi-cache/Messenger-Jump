@@ -23,7 +23,7 @@
     if (!enabled) {
       stopAutoScroll();
       clearHighlights();
-      if (panelVisible) setPanel(false);
+      panelVisible = false;
     }
   }
 
