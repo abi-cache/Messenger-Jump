@@ -12,7 +12,7 @@
   let searchResults = [];
   let currentResultIndex = -1;
   let isAutoScrolling = false;
-  
+
 let btnEnabled = true; // controls whether the floating calendar button is visible
 
   function setButtonVisible(enabled) {
@@ -615,6 +615,22 @@ let btnEnabled = true; // controls whether the floating calendar button is visib
     bindEvents();
     watchForPanelRemoval();
 
+// Read saved enabled state and apply to button
+    if (typeof chrome !== 'undefined' && chrome.storage) {
+      chrome.storage.local.get({ messengerJumpEnabled: true }, ({ messengerJumpEnabled }) => {
+        setButtonVisible(messengerJumpEnabled);
+      });
+    }
+
+    // Listen for popup toggle messages
+    if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.onMessage) {
+      chrome.runtime.onMessage.addListener((msg) => {
+        if (msg.type === 'MESSENGERJUMP_SET_ENABLED') {
+          setButtonVisible(msg.enabled);
+        }
+      });
+    }
+    
     // Watch for Facebook SPA navigation — clear state on conversation change
     let lastUrl = location.href;
     new MutationObserver(() => {
