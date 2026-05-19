@@ -1,4 +1,4 @@
-// MessengerJump - Content Script v1.1.0
+// MessengerJump - Content Script v1.2.0
 // Injects a date search panel into Facebook Messenger
 // Privacy: this extension only reads date separator text. It never reads,
 // stores, or transmits message content of any kind.
@@ -13,26 +13,31 @@
   let currentResultIndex = -1;
   let isAutoScrolling = false;
 
-let btnEnabled = true; // controls whether the floating calendar button is visible
+  let extensionEnabled = true;
 
-  function setButtonVisible(enabled) {
-    btnEnabled = enabled;
-    const btn = document.getElementById('fbds-toggle-btn');
-    if (!btn) return;
-    btn.style.display = enabled ? '' : 'none';
-    if (!enabled && panelVisible) setPanel(false);
+  function setExtensionEnabled(enabled) {
+    extensionEnabled = enabled;
+    const container = document.getElementById('fbds-container');
+    if (!container) return;
+    container.style.display = enabled ? '' : 'none';
+    if (!enabled) {
+      stopAutoScroll();
+      clearHighlights();
+      if (panelVisible) setPanel(false);
+    }
   }
+
   // Auto-scroll state
   let scrollMutationObserver = null;
-  let scrollContainer = null;       // cached once per search
+  let scrollContainer = null;
   let scrollAttempts = 0;
   let noNewContentCount = 0;
   let lastScrollHeight = -1;
   let pendingScrollTimer = null;
-  const MAX_SCROLL_ATTEMPTS = 80;   // safety cap (~2–3 mins of loading)
-  const MAX_NO_CHANGE = 5;          // stop if height unchanged 5 checks in a row
-  const BASE_INTERVAL = 900;        // ms base between scroll steps
-  const JITTER = 300;               // ±ms random jitter (anti-bot-detection)
+  const MAX_SCROLL_ATTEMPTS = 80;
+  const MAX_NO_CHANGE = 5;
+  const BASE_INTERVAL = 900;
+  const JITTER = 300;
 
   // ── Create the floating panel ─────────────────────────────────────────────
   function createPanel() {
@@ -144,7 +149,7 @@ let btnEnabled = true; // controls whether the floating calendar button is visib
     document.addEventListener('keydown', e => {
       if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'D') {
         e.preventDefault();
-        togglePanel();
+        if (extensionEnabled) togglePanel();
       }
     });
   }
@@ -314,19 +319,17 @@ let btnEnabled = true; // controls whether the floating calendar button is visib
     return results;
   }
 
-  // Returns the earliest date currently visible in the conversation, or null
+  // Returns the earliest date currently loaded in the conversation
   function getEarliestLoadedDate() {
     const timestamps = findTimestampElements();
     if (timestamps.length === 0) return null;
     return timestamps.reduce((min, t) => t.date < min ? t.date : min, timestamps[0].date);
   }
 
-  // ── Find the scrollable message container (cached) ─────────────────────────
+  // ── Find the scrollable message container ─────────────────────────────────
   function findMessageContainer() {
-    // Walk up from a known message element for better targeting
     const msgArea = document.querySelector('[role="main"]');
     if (msgArea) {
-      // Find the deepest scrollable child
       const all = msgArea.querySelectorAll('*');
       let best = null, bestScore = 0;
       for (const el of all) {
@@ -338,7 +341,6 @@ let btnEnabled = true; // controls whether the floating calendar button is visib
       }
       if (best) return best;
     }
-    // Fallback: broadest scrollable div
     let best = null, bestScore = 0;
     for (const el of document.querySelectorAll('div')) {
       if (el.closest('#fbds-container')) continue;
@@ -350,7 +352,7 @@ let btnEnabled = true; // controls whether the floating calendar button is visib
     return best;
   }
 
-  // ── Auto-scroll logic (MutationObserver-driven) ───────────────────────────
+  // ── Auto-scroll logic ─────────────────────────────────────────────────────
   function stopAutoScroll() {
     isAutoScrolling = false;
     scrollAttempts = 0;
@@ -383,8 +385,6 @@ let btnEnabled = true; // controls whether the floating calendar button is visib
 
     setStatus('⏳ Loading older messages… (0)', 'searching');
 
-    // Use MutationObserver to detect when new messages are added
-    // then immediately check if target date is loaded
     scrollMutationObserver = new MutationObserver(() => {
       if (!isAutoScrolling) return;
       const found = findTimestampElements().filter(({ date }) => date >= fromDate && date < toDate);
@@ -400,8 +400,6 @@ let btnEnabled = true; // controls whether the floating calendar button is visib
 
   function scheduleScrollStep(fromDate, toDate) {
     if (!isAutoScrolling) return;
-
-    // Random jitter to avoid mechanical scroll pattern
     const delay = BASE_INTERVAL + (Math.random() * JITTER * 2 - JITTER);
     pendingScrollTimer = setTimeout(() => doScrollStep(fromDate, toDate), delay);
   }
@@ -411,7 +409,6 @@ let btnEnabled = true; // controls whether the floating calendar button is visib
 
     scrollAttempts++;
 
-    // Hard cap — stop after MAX_SCROLL_ATTEMPTS
     if (scrollAttempts >= MAX_SCROLL_ATTEMPTS) {
       stopAutoScroll();
       setStatus(
@@ -422,11 +419,9 @@ let btnEnabled = true; // controls whether the floating calendar button is visib
       return;
     }
 
-    // Early exit: if oldest loaded date is already earlier than target, it's not here
     const earliest = getEarliestLoadedDate();
     if (earliest && earliest < fromDate) {
       stopAutoScroll();
-      // One final check in case timing was off
       const found = findTimestampElements().filter(({ date }) => date >= fromDate && date < toDate);
       if (found.length > 0) { finishSearch(fromDate, toDate); return; }
       setStatus(`No messages found for that date. All older messages have been checked.`, 'warning');
@@ -452,7 +447,6 @@ let btnEnabled = true; // controls whether the floating calendar button is visib
       lastScrollHeight = currentHeight;
     }
 
-    // Scroll to top to trigger Facebook lazy-loading older messages
     scrollContainer.scrollTop = 0;
     setStatus(`⏳ Loading older messages… (${scrollAttempts})`, 'searching');
 
@@ -615,22 +609,22 @@ let btnEnabled = true; // controls whether the floating calendar button is visib
     bindEvents();
     watchForPanelRemoval();
 
-// Read saved enabled state and apply to button
+    // Read saved state and apply on load
     if (typeof chrome !== 'undefined' && chrome.storage) {
       chrome.storage.local.get({ messengerJumpEnabled: true }, ({ messengerJumpEnabled }) => {
-        setButtonVisible(messengerJumpEnabled);
+        setExtensionEnabled(messengerJumpEnabled);
       });
     }
 
-    // Listen for popup toggle messages
+    // Listen for toggle messages from popup
     if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.onMessage) {
       chrome.runtime.onMessage.addListener((msg) => {
         if (msg.type === 'MESSENGERJUMP_SET_ENABLED') {
-          setButtonVisible(msg.enabled);
+          setExtensionEnabled(msg.enabled);
         }
       });
     }
-    
+
     // Watch for Facebook SPA navigation — clear state on conversation change
     let lastUrl = location.href;
     new MutationObserver(() => {
