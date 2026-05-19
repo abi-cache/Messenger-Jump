@@ -15,7 +15,7 @@
 
   let extensionEnabled = true;
 
-  function setExtensionEnabled(enabled) {
+ function setExtensionEnabled(enabled) {
     extensionEnabled = enabled;
     const container = document.getElementById('fbds-container');
     if (!container) return;
